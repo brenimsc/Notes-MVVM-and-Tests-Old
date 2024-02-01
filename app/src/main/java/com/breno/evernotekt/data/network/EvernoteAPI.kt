@@ -1,17 +1,11 @@
-package com.breno.evernotekt.network
+package com.breno.evernotekt.data.network
 
-import com.breno.evernotekt.model.Note
+import com.breno.evernotekt.data.model.Note
 import io.reactivex.Observable
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-
-/**
- *
- * Setembro, 24 2019
- * @author suporte@moonjava.com.br (Tiago Aguiar).
- */
 
 interface EvernoteAPI {
 

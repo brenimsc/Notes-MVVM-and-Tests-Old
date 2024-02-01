@@ -1,4 +1,4 @@
-package com.breno.evernotekt.home.presentation
+package com.breno.evernotekt.view.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,37 +7,46 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.breno.evernotekt.R
-import com.breno.evernotekt.add.presentation.FormActivity
-import com.breno.evernotekt.home.Home
-import com.breno.evernotekt.model.Note
-import com.breno.evernotekt.model.RemoteDataSource
+import com.breno.evernotekt.data.model.Note
+import com.breno.evernotekt.view.adapters.NoteAdapter
+import com.breno.evernotekt.viewmodel.HomeViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.app_bar_home.*
-import kotlinx.android.synthetic.main.content_home.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class HomeActivity : AppCompatActivity(),
-    NavigationView.OnNavigationItemSelectedListener,
-    Home.View {
+    NavigationView.OnNavigationItemSelectedListener {
 
-    private lateinit var homePresenter: HomePresenter
+    private val viewModel by viewModel<HomeViewModel>()
+
+    private val toolbar by lazy {
+        findViewById<Toolbar>(R.id.toolbarAppBar)
+    }
+    private val drawerLayout by lazy {
+        findViewById<DrawerLayout>(R.id.drawer_layout)
+    }
+    private val navView by lazy {
+        findViewById<NavigationView>(R.id.nav_view)
+    }
+    private val homeRecyclerView by lazy {
+        findViewById<RecyclerView>(R.id.home_recycler_view)
+    }
+    private val fab by lazy {
+        findViewById<FloatingActionButton>(R.id.fab)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-
-        setupPresenter()
         setupViews()
-    }
-
-    private fun setupPresenter() {
-        val dataSource = RemoteDataSource()
-        homePresenter = HomePresenter(this, dataSource)
     }
 
     private fun setupViews() {
@@ -45,18 +54,18 @@ class HomeActivity : AppCompatActivity(),
 
         val toggle = ActionBarDrawerToggle(
             this,
-            drawer_layout,
+            drawerLayout,
             toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-        drawer_layout.addDrawerListener(toggle)
+        drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-        nav_view.setNavigationItemSelectedListener(this)
+        navView.setNavigationItemSelectedListener(this)
 
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        home_recycler_view.addItemDecoration(divider)
-        home_recycler_view.layoutManager = LinearLayoutManager(this)
+        homeRecyclerView.addItemDecoration(divider)
+        homeRecyclerView.layoutManager = LinearLayoutManager(this)
 
         fab.setOnClickListener {
             val intent = Intent(baseContext, FormActivity::class.java)
@@ -66,17 +75,16 @@ class HomeActivity : AppCompatActivity(),
 
     override fun onStart() {
         super.onStart()
-        homePresenter.getAllNotes()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        homePresenter.stop()
+        viewModel.getAllNotes().observe(this) {
+            it?.let {
+                displayNotes(it)
+            } ?: displayError("Erro ao carregar notas")
+        }
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -101,19 +109,16 @@ class HomeActivity : AppCompatActivity(),
         if (id == R.id.nav_all_notes) {
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    override fun displayError(message: String) {
+    private fun displayError(message: String) {
         showToast(message)
     }
 
-    override fun displayEmptyNotes() {
-    }
-
-    override fun displayNotes(notes: List<Note>) {
-        home_recycler_view.adapter =
+    private fun displayNotes(notes: List<Note>) {
+        homeRecyclerView.adapter =
             NoteAdapter(notes) { note ->
                 val intent = Intent(baseContext, FormActivity::class.java)
                 intent.putExtra("noteId", note.id)

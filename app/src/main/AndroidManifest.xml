@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -13,7 +14,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name="com.breno.evernotekt.home.presentation.HomeActivity"
+            android:name="com.breno.evernotekt.view.activities.HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.breno.evernotekt.add.presentation.FormActivity" />
+        <activity android:name="com.breno.evernotekt.view.activities.FormActivity" />
     </application>
 
 </manifest>

@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.breno.evernotekt"
         minSdkVersion 17
@@ -22,9 +22,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
     namespace 'com.breno.evernotekt'
 
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
+    buildFeatures{
+        viewBinding true
+        dataBinding true
+    }
 }
 
 dependencies {
@@ -49,11 +60,17 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
+    //Koin
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-core:$koin_version"
+
     // Mock
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testImplementation('com.nhaarman:mockito-kotlin-kt1.1:1.5.0', {
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
     })
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

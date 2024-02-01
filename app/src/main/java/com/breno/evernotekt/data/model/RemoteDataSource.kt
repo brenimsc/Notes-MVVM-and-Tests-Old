@@ -1,15 +1,10 @@
-package com.breno.evernotekt.model
+package com.breno.evernotekt.data.model
 
-import com.breno.evernotekt.network.RetrofitClient
+import com.breno.evernotekt.data.network.RetrofitClient
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-/**
- *
- * Setembro, 24 2019
- * @author suporte@moonjava.com.br (Tiago Aguiar).
- */
 class RemoteDataSource {
 
     fun listNotes(): Observable<List<Note>> =
